@@ -6,6 +6,9 @@ Created on Mon Oct 26 10:34:49 2020
 """
 import os
 import numpy as np
+import pygame
+
+pygame.init()
 
 #os.chdir(r'C:\Users\straw\Desktop\AIS\ProjectPool 1\Sudoku')
 
@@ -15,12 +18,35 @@ class Sudoku:
         self.grid = self.__parser()
     
     def __load_file(self):
+        """
+        This function loads the sudoku file for a given path
+
+        Returns
+        -------
+        content : str
+            loaded file's content.
+
+        """
         file = open(self.path, "r")
         content = file.read()
         file.close()
         return content
     
     def __parser(self):
+        """
+        This function parses sudoku content and saves it to a grid
+        
+        Raises
+        ------
+        ValueError
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
         self.grid = np.zeros((9,9))
         content = self.__load_file()
         content = content.translate({ord('\n'): None})
@@ -34,20 +60,17 @@ class Sudoku:
             for r in range(0, len(rows)):
                 self.grid[r,:] = np.array(list(rows[r]))
             self.grid = self.grid.astype(int)
-            
-        #square1 = self.grid[0:3, 0:3]
-        #square2 = self.grid[0:3, 3:6]
-        #square3 = self.grid[0:3, 6:9]
-        #square4 = self.grid[3:6, 0:3]
-        #square5 = self.grid[3:6, 3:6]
-        #square6 = self.grid[3:6, 6:9]
-        #square7 = self.grid[6:9, 0:3]
-        #square8 = self.grid[6:9, 3:6]
-        #square9 = self.grid[6:9, 6:9]
-        
         return self.grid
     
     def print_grid(self):
+        """
+        This function print the sudoku grid
+
+        Returns
+        -------
+        None.
+
+        """
         print()
         for i in range(0, len(self.grid)):
             if i % 3 == 0 and i != 0:
@@ -106,15 +129,48 @@ class Sudoku:
         np.savetxt("solved_sudoku.txt", self.grid, fmt="%s |")
         
     
+    def display_solver(self):
+        width = 80
+        height = 80
+        margin = 8
+        
+        #grid = np.zeros((9,9))
+        
+        size = (800, 800)
+        
+        window = pygame.display.set_mode(size)
+        
+        # Set title of screen
+        pygame.display.set_caption("Sudoku Solver")
+        run = True
+        while run :
+          for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+              run = False
+            #if event.type == pygame.MOUSEBUTTONDOWN:
+          window.fill((0, 0, 0))
+          for row in range(9):
+                for column in range(9):
+                    color = (255, 255, 255)
+                    pygame.draw.rect(window,
+                                     color,
+                                     [(margin + width) * column + margin,
+                                      (margin + height) * row + margin,
+                                      width,
+                                      height])
+          pygame.display.flip()
+        pygame.quit()
+
+    
 if __name__ == '__main__':
     print()
-    s = Sudoku(path="sudoku2.txt")
+    s = Sudoku(path="sudoku.txt")
     print('Sudoku grid before solving')
     s.print_grid()
     print()
     s.solver()
     print('Sudoku grid after solving')
     s.print_grid()
-    s.export_grid()
+    #s.export_grid()
 
 

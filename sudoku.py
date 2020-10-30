@@ -105,7 +105,7 @@ class Sudoku:
         Returns
         -------
         bool
-            DESCRIPTION.
+            valid move or not.
 
         """
         
@@ -121,6 +121,7 @@ class Sudoku:
         for j in range(0, len(self.grid)):
             if self.grid[pos[0],j] == nb and j != pos[1]:
                 return False
+            
         # Set column check rows
         for i in range(0, len(self.grid)):
             if self.grid[i,pos[1]] == nb and i != pos[0]:
@@ -134,7 +135,7 @@ class Sudoku:
         Returns
         -------
         bool
-            DESCRIPTION.
+            solved sudoku or not.
 
         """
         empty = self.__get_empty_box()
@@ -238,9 +239,10 @@ if __name__ == '__main__':
     print('Sudoku grid before solving')
     s.print_grid()
     print()
-    print('Sudoku grid after solving')
     s.display_solver()
+    print('Sudoku grid after solving')
     s.print_grid()
     s.export_grid()
+
 
 

@@ -130,35 +130,41 @@ class Sudoku:
         
     
     def display_solver(self):
-        width = 80
-        height = 80
-        margin = 8
-        
-        #grid = np.zeros((9,9))
-        
-        size = (800, 800)
-        
+        width = 800
+        height = 1000
+        size = (width, height)
         window = pygame.display.set_mode(size)
+        gap = width/9
         
         # Set title of screen
         pygame.display.set_caption("Sudoku Solver")
+        
+        font = pygame.font.SysFont("comicsans", 40)
+
+        window.fill((255, 255, 255))
+
+        for i in range(0, 9):
+            for j in range(0, 9):
+                x = i*gap
+                y = j*gap
+                display = font.render("{}".format(self.grid[j,i]), 1, (0,0,0))
+                window.blit(display,(x + (gap/2 - display.get_width()/2), y + (gap/2 - display.get_width()/2)))
         run = True
         while run :
-          for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-              run = False
-            #if event.type == pygame.MOUSEBUTTONDOWN:
-          window.fill((0, 0, 0))
-          for row in range(9):
-                for column in range(9):
-                    color = (255, 255, 255)
-                    pygame.draw.rect(window,
-                                     color,
-                                     [(margin + width) * column + margin,
-                                      (margin + height) * row + margin,
-                                      width,
-                                      height])
-          pygame.display.flip()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                #if event.type == pygame.MOUSEBUTTONDOWN:
+            # Draw Grid Lines
+            for k in range(0, 9):
+                if k % 3 == 0 and k != 0:
+                    thick = 5
+                else:
+                    thick = 2
+                pygame.draw.line(window, (0, 0, 0), (0, k*gap), (800, k*gap), thick)
+                pygame.draw.line(window, (0, 0, 0), (k*gap, 0), (k* gap, 800), thick)
+        
+            pygame.display.flip()
         pygame.quit()
 
     
@@ -168,9 +174,11 @@ if __name__ == '__main__':
     print('Sudoku grid before solving')
     s.print_grid()
     print()
+    #s.display_solver()
     s.solver()
     print('Sudoku grid after solving')
     s.print_grid()
+    s.display_solver()
     #s.export_grid()
 
 

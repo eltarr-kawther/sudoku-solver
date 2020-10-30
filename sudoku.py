@@ -4,18 +4,19 @@ Created on Mon Oct 26 10:34:49 2020
 
 @author: straw
 """
-import os
 import numpy as np
 import pygame
 
 pygame.init()
 
-#os.chdir(r'C:\Users\straw\Desktop\AIS\ProjectPool 1\Sudoku')
-
 class Sudoku:
     def __init__(self, path):
         self.path = path
         self.grid = self.__parser()
+        self.width = 800
+        self.height = 900
+        self.gap = self.width/9
+        self.window = None
     
     def __load_file(self):
         """
@@ -91,6 +92,22 @@ class Sudoku:
         return None
     
     def __check_move_validity(self, nb, pos):
+        """
+        
+
+        Parameters
+        ----------
+        nb : TYPE
+            DESCRIPTION.
+        pos : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        bool
+            DESCRIPTION.
+
+        """
         
         # Find square and check it
         r_square = pos[0] // 3
@@ -112,6 +129,14 @@ class Sudoku:
         return True
     
     def solver(self):
+        """
+
+        Returns
+        -------
+        bool
+            DESCRIPTION.
+
+        """
         empty = self.__get_empty_box()
         if empty == None:
             return True
@@ -125,48 +150,87 @@ class Sudoku:
         return False
     
     def export_grid(self):
-        self.solver()
-        np.savetxt("solved_sudoku.txt", self.grid, fmt="%s |")
-        
+        """
+        If the sudoku solver has been called, export results into text file
+        Returns
+        -------
+        None.
+
+        """
+        if self.solver():
+            np.savetxt("solved_sudoku.txt", self.grid, fmt="%s |")
+        else:
+            np.savetxt("solved_sudoku.txt", self.grid, fmt="%s |")
     
-    def display_solver(self):
-        width = 800
-        height = 1000
-        size = (width, height)
-        window = pygame.display.set_mode(size)
-        gap = width/9
-        
-        # Set title of screen
-        pygame.display.set_caption("Sudoku Solver")
-        
-        font = pygame.font.SysFont("comicsans", 40)
+    def display_numbers(self, font):
+        """
+        Display Sudoku's numbers in grid
 
-        window.fill((255, 255, 255))
+        Parameters
+        ----------
+        font : pygame.font.Font
+            font of numbers.
 
+        Returns
+        -------
+        None.
+
+        """
         for i in range(0, 9):
             for j in range(0, 9):
-                x = i*gap
-                y = j*gap
-                display = font.render("{}".format(self.grid[j,i]), 1, (0,0,0))
-                window.blit(display,(x + (gap/2 - display.get_width()/2), y + (gap/2 - display.get_width()/2)))
+                x = i*self.gap
+                y = j*self.gap
+                if self.grid[j,i] == 0:
+                    display = font.render("", 1, (0,0,0))
+                    self.window.blit(display,(x + (self.gap/2 - display.get_width()/2), y + (self.gap/2 - display.get_height()/2)))
+                else:   
+                    display = font.render("{}".format(self.grid[j,i]), 1, (0,0,0))
+                    self.window.blit(display,(x + (self.gap/2 - display.get_width()/2), y + (self.gap/2 - display.get_height()/2)))
+
+    def display_solver(self):
+        """
+        Displays Sudoku solver
+
+        Returns
+        -------
+        None.
+
+        """
+        self.window = pygame.display.set_mode((self.width, self.height))
+        # Set title of screen
+        pygame.display.set_caption("Sudoku Solver")
+                
+        font = pygame.font.SysFont("comicsans", 40)
+
+        self.window.fill((255, 255, 255))
+        
+        self.display_numbers(font)
+        
         run = True
         while run :
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                #if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos() 
+                    if self.width/2-46 <= pos[0] <= self.width/2+46 and self.width+((self.height-self.width)/2)-46 <= pos[1] <= self.width+((self.height-self.width)/2)+46: 
+                        self.solver()
+                        self.display_numbers(font)
+
             # Draw Grid Lines
             for k in range(0, 9):
                 if k % 3 == 0 and k != 0:
                     thick = 5
                 else:
                     thick = 2
-                pygame.draw.line(window, (0, 0, 0), (0, k*gap), (800, k*gap), thick)
-                pygame.draw.line(window, (0, 0, 0), (k*gap, 0), (k* gap, 800), thick)
-        
-            pygame.display.flip()
+                pygame.draw.line(self.window, (0, 0, 0), (0, k*self.gap), (self.width, k*self.gap), thick)
+                pygame.draw.line(self.window, (0, 0, 0), (k*self.gap, 0), (k*self.gap, self.width), thick)
+            pygame.draw.line(self.window, (0, 0, 0), (0, 9*self.gap), (9*self.gap, self.width), thick)
+            pygame.draw.circle(self.window, (0, 0, 0), (round(self.width/2), round(self.width+((self.height-self.width)/2))), 46, 46)
+            text = font.render("Solve", 1, (255, 255, 255))
+            self.window.blit(text,(round(self.width/2)-35, round(self.width+((self.height-self.width)/2)-14)))
+            pygame.display.update()
         pygame.quit()
-
     
 if __name__ == '__main__':
     print()
@@ -174,11 +238,9 @@ if __name__ == '__main__':
     print('Sudoku grid before solving')
     s.print_grid()
     print()
-    #s.display_solver()
-    s.solver()
     print('Sudoku grid after solving')
-    s.print_grid()
     s.display_solver()
-    #s.export_grid()
+    s.print_grid()
+    s.export_grid()
 
 

@@ -188,6 +188,19 @@ class Sudoku:
                     display = font.render("{}".format(self.grid[j,i]), 1, (0,0,0))
                     self.window.blit(display,(x + (self.gap/2 - display.get_width()/2), y + (self.gap/2 - display.get_height()/2)))
 
+    def display_rect(self):
+        color = (200, 255, 255)
+        for row in range(0, 9):
+            for column in range(9):
+                if self.grid[row][column] == 0:
+                    pygame.draw.rect(self.window,
+                    color,
+                    [self.gap*column,
+                    self.gap*row,
+                    self.gap,
+                    self.gap])
+            
+
     def display_solver(self):
         """
         Displays Sudoku solver
@@ -205,6 +218,7 @@ class Sudoku:
 
         self.window.fill((255, 255, 255))
         
+        self.display_rect()
         self.display_numbers(font)
         
         run = True

@@ -1,6 +1,6 @@
 # Sudoku Solver
 
-Sudoku solver from project pool
+Sudoku solver from project pool 1
 
 
 ## Files description
